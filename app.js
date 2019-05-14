@@ -83,10 +83,10 @@ app.delete('/:id', (req, res) => {
 
 // Middleware for handling Error
 // Sends Error Response Back to User
-app.use((err,req,res,next)=>{
+app.use((err, req, res, next) => {
     res.status(err.status).json({
-        error : {
-            message : err.message
+        error: {
+            message: err.message
         }
     });
 })
