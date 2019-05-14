@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
+const Joi = require('joi');
 
 const db = require('./db');
 const collection = 'todo'
@@ -32,7 +33,7 @@ app.put('/:id', (req, res) => {
     // Document used to update
     const userInput = req.body;
     // Find Document By ID and Update
-    db.getDB().collection(collection).findOneAndUpdate({_id : db.getPrimaryKey(todoID)}, {$set : {todo : userInput.todo}}, {returnOriginal : false}, (err, result) => {
+    db.getDB().collection(collection).findOneAndUpdate({_id: db.getPrimaryKey(todoID)}, {$set: {todo: userInput.todo}}, {returnOriginal: false}, (err, result) => {
         if (err)
             console.log(err);
         else
