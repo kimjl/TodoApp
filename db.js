@@ -1,9 +1,11 @@
-const MongoClient = require("mongodb").MongoClient;
+const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
 // name of our database
-const dbname = "crud_mongodb";
+// const dbname = 'crud_mongodb';
+const dbname = 'tododb';
 // location of where our mongoDB database is located
-const url = "mongodb://localhost:27017";
+// const url = "mongodb://localhost:27017";
+const url = 'mongodb://YOURUSERNAME:YOURPASSWORD@ds055525.mlab.com:55525/tododb';
 // Options for mongoDB
 const mongoOptions = {useNewUrlParser : true};
 

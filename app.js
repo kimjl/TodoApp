@@ -15,12 +15,12 @@ const schema = Joi.object().keys({
 app.use(bodyParser.json());
 
 // serve static html file to user
-app.get('/', (req,res) => {
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname,'index.html'));
 });
 
 // read
-app.get('/getTodos', (req,res) => {
+app.get('/getTodos', (req, res) => {
     // get all Todo documents within our todo collection
     // send back to user as json
     db.getDB().collection(collection).find({}).toArray((err, documents) => {
@@ -81,7 +81,6 @@ app.delete('/:id', (req, res) => {
   });
 });
 
-// Middleware for handling Error
 // Sends Error Response Back to User
 app.use((err, req, res, next) => {
     res.status(err.status).json({
