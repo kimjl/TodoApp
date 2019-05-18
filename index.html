@@ -45,10 +45,14 @@
             </div>
             <div class="col-lg-2"></div>
         </div>
-
+        <br>
+        <div align="center">
+            <input type="tel" name="number" id="number" placeholder="Enter Phone Number">
+            <input type="tel" name="msg" id="msg" placeholder="Enter Text Message">
+            <input type="button" id="button" class="btn btn-primary" value="Send Text">
+        </div>
     </div>
-    <br>
-    <button type="button" class="btn btn-primary btn-lg btn-block">Send me my Todo list</button>
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -60,7 +64,30 @@
             const form = $("#form");
             const todoUserInput = $("#todoUserInput");
             const message = $("#message");
+
+            const numberInput = document.getElementById('number');
+            const textInput = document.getElementById('msg');
+            const button = document.getElementById('button');
             message.hide();
+
+            // sending text to number
+            button.addEventListener('click', send, false);
+            function send() {
+                const number = numberInput.value.replace(/\D/g, '');
+                const text = textInput.value;
+
+                fetch('/', {
+                    method: "post",
+                    headers: {
+                        'Content-type': 'application/json'
+                    },
+                    body: JSON.stringify({number: number, text: text})
+                }).then(function(res) {
+                    console.log(res)
+                }).catch(function(err) {
+                    console.log(err)
+                });
+            }
 
             const displayMessage = (flag, msg) => {
                 // successful post

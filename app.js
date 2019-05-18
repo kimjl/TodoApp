@@ -4,22 +4,14 @@ const path = require('path');
 const Joi = require('joi');
 
 // twilio requirements
-const accountSid = 'YOURSID';
-const authToken = 'YOURAUTHTOKEN';
+const accountSid = 'YOURID';
+const authToken = 'YOURTOKEN';
 const client = require('twilio')(accountSid, authToken);
 
 const db = require('./db');
 const collection = 'todo'
 const app = express();
 
-// twilio send todo to user
-client.messages
-  .create({
-     body: 'Testing outbound message.',
-     from: '+12405466773',
-     to: '+YOURNUMBER'
-   })
-  .then(message => console.log(message.sid));
 
 // schema used for data validation for our todo document
 const schema = Joi.object().keys({
@@ -45,22 +37,35 @@ app.get('/getTodos', (req, res) => {
     });
 });
 
-app.get('/getMsg', (req, res) => {
-    // get all Todo documents within our todo collection
-    // send back to user as json
-    db.getDB().collection(collection).find({}, {projection: {_id: 0}}).toArray((err, documents) => {
-        if (err)
-            console.log(err);
-        else {
-            var msg = ''
-            documents.forEach((doc) => {
-                console.log(doc);
-                msg = msg + doc.todo + '. ';
-            });
-            res.json(msg);
-        }
-    });
-});
+// get all todos for twilio messaging
+// app.get('/getMsg', (req, res) => {
+//     db.getDB().collection(collection).find({}, {projection: {_id: 0}}).toArray((err, documents) => {
+//         if (err)
+//             console.log(err);
+//         else {
+//             var msg = ''
+//             documents.forEach((doc) => {
+//                 console.log(doc);
+//                 msg = msg + doc.todo + '. ';
+//             });
+//             res.json(msg);
+//         }
+//     });
+// });
+
+app.post('/', (req, res) => {
+    const number = req.body.number;
+    const text = req.body.text
+
+    client.messages
+      .create({
+         body: text,
+         from: '+YOURTRIALNUMBER',
+         to: number
+       })
+      .then(message => console.log(message.sid));
+
+})
 
 // update
 app.put('/:id', (req, res) => {
