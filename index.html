@@ -47,7 +47,8 @@
         </div>
 
     </div>
-
+    <br>
+    <button type="button" class="btn btn-primary btn-lg btn-block">Send me my Todo list</button>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -63,7 +64,7 @@
 
             const displayMessage = (flag, msg) => {
                 // successful post
-                if(flag){
+                if(flag) {
                     message.removeClass('alert-danger');
                     message.addClass('alert-success');
                     message.html(msg);
@@ -152,7 +153,7 @@
             const displayTodos = (data) => {
                 data.forEach((todo) => {
                     let ids = buildIDS(todo);
-                    display.append(buildTemplate(todo,ids));
+                    display.append(buildTemplate(todo, ids));
                     editTodo(todo,ids.todoID,ids.editID);
                     deleteTodo(todo, ids.listItemID, ids.deleteID);
                 });
