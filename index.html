@@ -65,23 +65,46 @@
             const todoUserInput = $("#todoUserInput");
             const message = $("#message");
 
+            // values of the inputs in form
             const numberInput = document.getElementById('number');
             const textInput = document.getElementById('msg');
             const button = document.getElementById('button');
             message.hide();
 
             // sending text to number
+
             button.addEventListener('click', send, false);
             function send() {
+                // remove non-numeric characters with replace
                 const number = numberInput.value.replace(/\D/g, '');
-                const text = textInput.value;
+                const msg = textInput.value;
 
+                //call api get db response
+                // app.get('/getMsg', (req, res) => {
+                //     db.getDB().collection(collection).find({}, {projection: {_id: 0}}).toArray((err, documents) => {
+                //         if (err)
+                //             console.log(err);
+                //         else {
+                //             var msg = ''
+                //             documents.forEach((doc) => {
+                //                 console.log(doc);
+                //                 msg = msg + doc.todo + '. ';
+                //             });
+                //             res.json(msg);
+                //         }
+                //     });
+                // });
+
+
+                //send in post method below
+
+                // post request to server
                 fetch('/', {
                     method: "post",
                     headers: {
                         'Content-type': 'application/json'
                     },
-                    body: JSON.stringify({number: number, text: text})
+                    body: JSON.stringify({number: number, text: msg})
                 }).then(function(res) {
                     console.log(res)
                 }).catch(function(err) {

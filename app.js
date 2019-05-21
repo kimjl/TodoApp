@@ -4,8 +4,8 @@ const path = require('path');
 const Joi = require('joi');
 
 // twilio requirements
-const accountSid = 'YOURID';
-const authToken = 'YOURTOKEN';
+const accountSid = 'YOURACCOUNTSID';
+const authToken = 'YOURAUTHTOKEN';
 const client = require('twilio')(accountSid, authToken);
 
 const db = require('./db');
@@ -38,33 +38,37 @@ app.get('/getTodos', (req, res) => {
 });
 
 // get all todos for twilio messaging
-// app.get('/getMsg', (req, res) => {
-//     db.getDB().collection(collection).find({}, {projection: {_id: 0}}).toArray((err, documents) => {
-//         if (err)
-//             console.log(err);
-//         else {
-//             var msg = ''
-//             documents.forEach((doc) => {
-//                 console.log(doc);
-//                 msg = msg + doc.todo + '. ';
-//             });
-//             res.json(msg);
-//         }
-//     });
-// });
+app.get('/getMsg', (req, res) => {
+    db.getDB().collection(collection).find({}, {projection: {_id: 0}}).toArray((err, documents) => {
+        if (err)
+            console.log(err);
+        else {
+            var msg = ''
+            documents.forEach((doc) => {
+                console.log(doc);
+                msg = msg + doc.todo + '. ';
+            });
+            res.json(msg);
+        }
+    });
+});
 
+// catch form submit
 app.post('/', (req, res) => {
+    // res.send(req.body);
+    // console.log(req.body)
+
+    // this comes from our form
     const number = req.body.number;
-    const text = req.body.text
+    const text = req.body.msg
 
     client.messages
       .create({
          body: text,
-         from: '+YOURTRIALNUMBER',
+         from: '+YOURTWILIONUMBER',
          to: number
        })
       .then(message => console.log(message.sid));
-
 })
 
 // update
