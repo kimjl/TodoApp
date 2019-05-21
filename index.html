@@ -79,25 +79,6 @@
                 const number = numberInput.value.replace(/\D/g, '');
                 const msg = textInput.value;
 
-                //call api get db response
-                // app.get('/getMsg', (req, res) => {
-                //     db.getDB().collection(collection).find({}, {projection: {_id: 0}}).toArray((err, documents) => {
-                //         if (err)
-                //             console.log(err);
-                //         else {
-                //             var msg = ''
-                //             documents.forEach((doc) => {
-                //                 console.log(doc);
-                //                 msg = msg + doc.todo + '. ';
-                //             });
-                //             res.json(msg);
-                //         }
-                //     });
-                // });
-
-
-                //send in post method below
-
                 // post request to server
                 fetch('/', {
                     method: "post",
