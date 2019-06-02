@@ -1,16 +1,19 @@
+// import modules
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const Joi = require('joi');
 
-// twilio requirements
-const accountSid = 'YOURACCOUNTSID';
-const authToken = 'YOURAUTHTOKEN';
-const client = require('twilio')(accountSid, authToken);
-
 const db = require('./db');
-const collection = 'todo'
+const collection = 'todo';
 const app = express();
+
+//nexmo requirements
+const Nexmo = require('nexmo');
+const nexmo = new Nexmo({
+    apiKey: '2aa2fce4',
+    apiSecret: 'c8k4Qg15aYUmlvb3'
+}, {debug: true});
 
 
 // schema used for data validation for our todo document
@@ -19,59 +22,32 @@ const schema = Joi.object().keys({
 });
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 // serve static html file to user
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname,'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+app.get('/sendSMS', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// read
+//read
 app.get('/getTodos', (req, res) => {
-    // get all Todo documents within our todo collection
-    // send back to user as json
+    //get all todos from db and send back as json to user
     db.getDB().collection(collection).find({}).toArray((err, documents) => {
-        if (err)
-            console.log(err);
-        else
+        if(err){
+            console.log(err)
+        }
+        else{
+            console.log(documents);
             res.json(documents);
-    });
-});
-
-// get all todos for twilio messaging
-app.get('/getMsg', (req, res) => {
-    db.getDB().collection(collection).find({}, {projection: {_id: 0}}).toArray((err, documents) => {
-        if (err)
-            console.log(err);
-        else {
-            var msg = ''
-            documents.forEach((doc) => {
-                console.log(doc);
-                msg = msg + doc.todo + '. ';
-            });
-            res.json(msg);
         }
     });
 });
 
-// catch form submit
-app.post('/', (req, res) => {
-    // res.send(req.body);
-    // console.log(req.body)
 
-    // this comes from our form
-    const number = req.body.number;
-    const text = req.body.msg
-
-    client.messages
-      .create({
-         body: text,
-         from: '+YOURTWILIONUMBER',
-         to: number
-       })
-      .then(message => console.log(message.sid));
-})
-
-// update
+//update
 app.put('/:id', (req, res) => {
     // Primary Key of Todo Document we wish to update
     const todoID = req.params.id;
@@ -86,9 +62,22 @@ app.put('/:id', (req, res) => {
     });
 });
 
-// create
+//create and send sms
 app.post('/', (req, res, next) => {
   const userInput = req.body;
+  const number = req.body.number;
+  const text = req.body.text;
+  nexmo.message.sendSms(
+      '18594747626', number, text, {type: 'unicode'},
+      (err, responseData) => {
+          if(err) {
+              console.log(err);
+          }
+          else {
+              console.dir(responseData);
+          }
+      }
+  );
   Joi.validate(userInput, schema, (err, result) => {
       if(err) {
           const error = new Error('Invalid Input');
@@ -96,29 +85,33 @@ app.post('/', (req, res, next) => {
           next(error);
       }
       else {
+          console.log('Successfully validated input.')
           db.getDB().collection(collection).insertOne(userInput, (err, result) => {
               if(err) {
+                  console.log('Failed todo insert.');
                   const error = new Error('Failed to insert Todo document');
                   error.status = 400;
                   next(error);
               }
-              else
+              else {
+                  console.log('Successfully inserted todo');
                   res.json({result: result, document: result.ops[0], msg: 'Successfully inserted Todo', error: null});
+              }
             });
       }
-  })
-
+  });
 });
 
-// delete
+//delete
 app.delete('/:id', (req, res) => {
-  const todoID = req.params.id;
-  db.getDB().collection(collection).findOneAndDelete({_id: db.getPrimaryKey(todoID)}, (err, result) =>{
-    if (err)
-        console.log(err);
-    else
-        res.json(result);
-  });
+    const todoID = req.params.id;
+
+    db.getDB().collection(collection).findOneAndDelete({_id: db.getPrimaryKey(todoID)}, (err, result) => {
+        if(err)
+            console.log(err);
+        else
+            res.json(result);
+    });
 });
 
 // Sends Error Response Back to User
@@ -128,13 +121,13 @@ app.use((err, req, res, next) => {
             message: err.message
         }
     });
-})
+});
 
 db.connect((err) => {
     // If err unable to connect to database
     // End application
-    if (err) {
-        console.log('unable to connect to database');
+    if(err) {
+        console.log('unable to connect to db');
         process.exit(1);
     }
     // Successfully connected to database
@@ -142,7 +135,7 @@ db.connect((err) => {
     // And listen for Request
     else {
         app.listen(3000, () => {
-            console.log('connected to database, app listening on port 3000');
+            console.log('Connected to database, app listening on port 3000');
         });
     }
-});
+})
