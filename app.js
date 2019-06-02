@@ -11,8 +11,8 @@ const app = express();
 //nexmo requirements
 const Nexmo = require('nexmo');
 const nexmo = new Nexmo({
-    apiKey: '2aa2fce4',
-    apiSecret: 'c8k4Qg15aYUmlvb3'
+    apiKey: 'YOURKEY',
+    apiSecret: 'YOURSECRET'
 }, {debug: true});
 
 
@@ -68,7 +68,7 @@ app.post('/', (req, res, next) => {
   const number = req.body.number;
   const text = req.body.text;
   nexmo.message.sendSms(
-      '18594747626', number, text, {type: 'unicode'},
+      'YOURNUMBER', number, text, {type: 'unicode'},
       (err, responseData) => {
           if(err) {
               console.log(err);
